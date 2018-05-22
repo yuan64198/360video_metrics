@@ -1,13 +1,36 @@
 import cv2
 import numpy
-from WSPsnrCalc import WSPsnrCalc
+import os
+import threading
 
-game_TR = cv2.VideoCapture("./user01/game_output_1.mp4")
-game_CR = cv2.VideoCapture("./user01/game_output_1_CR.mp4")
+from MetricsCalc import MetricsCalc
 
-retT, frameT = game_TR.read()
-retC, frameC = game_CR.read()
-print("Start Evaluating WS-PSNR...")
-val = WSPsnrCalc(frameC, frameT)
-print(val)
+def main():
+
+
+	#"panel_tr_u01_30.csv"
+	panel_cr_u01 = [n for n in os.listdir("./video/panel/user01/CR/") if n[0]=='p' and n[-4:]=='.mp4']
+	panel_cr_u01 = sorted(panel_cr_u01, key=lambda item: int( item.split('_')[2]))
+
+	#"panel_tr_u01_30.csv"
+	panel_tr_u01 = [n for n in os.listdir("./video/panel/user01/TR/") if n[0]=='p' and n[-4:]=='.mp4']
+	panel_tr_u01 = sorted(panel_tr_u01, key=lambda item: int( item.partition('.')[0][13:]))
+	
+	#"game_cr_u01_30.csv"	
+	game_cr_u01 = [n for n in os.listdir("./video/game/user01/CR/") if n[0]=='g' and n[-4:]=='.mp4']
+	game_cr_u01 = sorted(game_cr_u01, key=lambda item: int( item.split('_')[2]))
+	
+	#"game_tr_u01_30.csv"
+	game_tr_u01 = [n for n in os.listdir("./video/game/user01/TR/") if n[0]=='g' and n[-4:]=='.mp4']
+	game_tr_u01 = sorted(game_tr_u01, key=lambda item: int( item.partition('.')[0][12:]))
+
+	t1 = threading.Thread(target = MetricsCalc, args = ( "game_cr_u01_3.csv", "./video/game/user01/CR/", game_cr_u01, "./video/game/game_equir.mp4", 1))	
+	t2 = threading.Thread(target = MetricsCalc, args = ( "game_cr_u01_5.csv", "./video/game/user01/CR/", game_cr_u01, "./video/game/game_equir.mp4", 1))
+
+	t1.start()
+	t2.start()
+	t1.join()
+	t2.join()
+if __name__ == "__main__":
+	main()
 
