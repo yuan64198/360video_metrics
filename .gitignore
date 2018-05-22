@@ -1,2 +1,6 @@
 *.ipynb
-user01/
+*.pyc
+*.csv
+video/
+log/
+metrics_log/
